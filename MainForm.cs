@@ -22,7 +22,7 @@ namespace ADF4368_Register
         public MainForm()
         {
             InitializeComponent();
-
+            label2.Text = string.Empty;
             InitDataTable();
         }
 
