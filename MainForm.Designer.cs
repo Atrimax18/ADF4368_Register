@@ -30,11 +30,14 @@
         {
             this.Cmd_Exit = new System.Windows.Forms.Button();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.dataGridView1 = new System.Windows.Forms.DataGridView();
             this.Cmd_Import = new System.Windows.Forms.Button();
             this.Cmd_Write = new System.Windows.Forms.Button();
             this.label1 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
-            this.dataGridView1 = new System.Windows.Forms.DataGridView();
+            this.textBox1 = new System.Windows.Forms.TextBox();
+            this.label3 = new System.Windows.Forms.Label();
+            this.Cmd_ReadAll = new System.Windows.Forms.Button();
             this.groupBox1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
             this.SuspendLayout();
@@ -61,6 +64,14 @@
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "ADF4368 REGISTER DATA:";
             // 
+            // dataGridView1
+            // 
+            this.dataGridView1.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.dataGridView1.Location = new System.Drawing.Point(6, 19);
+            this.dataGridView1.Name = "dataGridView1";
+            this.dataGridView1.Size = new System.Drawing.Size(536, 448);
+            this.dataGridView1.TabIndex = 0;
+            // 
             // Cmd_Import
             // 
             this.Cmd_Import.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
@@ -75,9 +86,9 @@
             // Cmd_Write
             // 
             this.Cmd_Write.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.Cmd_Write.Location = new System.Drawing.Point(673, 203);
+            this.Cmd_Write.Location = new System.Drawing.Point(348, 54);
             this.Cmd_Write.Name = "Cmd_Write";
-            this.Cmd_Write.Size = new System.Drawing.Size(115, 56);
+            this.Cmd_Write.Size = new System.Drawing.Size(115, 34);
             this.Cmd_Write.TabIndex = 3;
             this.Cmd_Write.Text = "Write Register";
             this.Cmd_Write.UseVisualStyleBackColor = true;
@@ -85,7 +96,7 @@
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(12, 44);
+            this.label1.Location = new System.Drawing.Point(12, 20);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(50, 13);
             this.label1.TabIndex = 4;
@@ -94,31 +105,54 @@
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(68, 44);
+            this.label2.Location = new System.Drawing.Point(80, 20);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(46, 13);
             this.label2.TabIndex = 5;
             this.label2.Text = "filename";
             // 
-            // dataGridView1
+            // textBox1
             // 
-            this.dataGridView1.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.dataGridView1.Location = new System.Drawing.Point(6, 19);
-            this.dataGridView1.Name = "dataGridView1";
-            this.dataGridView1.Size = new System.Drawing.Size(536, 448);
-            this.dataGridView1.TabIndex = 0;
+            this.textBox1.Location = new System.Drawing.Point(227, 62);
+            this.textBox1.Name = "textBox1";
+            this.textBox1.Size = new System.Drawing.Size(115, 20);
+            this.textBox1.TabIndex = 6;
+            // 
+            // label3
+            // 
+            this.label3.AutoSize = true;
+            this.label3.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label3.Location = new System.Drawing.Point(15, 63);
+            this.label3.Name = "label3";
+            this.label3.Size = new System.Drawing.Size(206, 16);
+            this.label3.TabIndex = 7;
+            this.label3.Text = "REGISTER ADDRES: 0x0000";
+            // 
+            // Cmd_ReadAll
+            // 
+            this.Cmd_ReadAll.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.Cmd_ReadAll.Location = new System.Drawing.Point(676, 216);
+            this.Cmd_ReadAll.Name = "Cmd_ReadAll";
+            this.Cmd_ReadAll.Size = new System.Drawing.Size(111, 40);
+            this.Cmd_ReadAll.TabIndex = 8;
+            this.Cmd_ReadAll.Text = "Read All";
+            this.Cmd_ReadAll.UseVisualStyleBackColor = true;
             // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(800, 623);
+            this.Controls.Add(this.Cmd_ReadAll);
+            this.Controls.Add(this.label3);
+            this.Controls.Add(this.textBox1);
             this.Controls.Add(this.label2);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.Cmd_Write);
             this.Controls.Add(this.Cmd_Import);
             this.Controls.Add(this.groupBox1);
             this.Controls.Add(this.Cmd_Exit);
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
             this.Name = "MainForm";
             this.Text = "ADF4368 Register Control";
             this.groupBox1.ResumeLayout(false);
@@ -137,6 +171,9 @@
         private System.Windows.Forms.Button Cmd_Write;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Label label2;
+        private System.Windows.Forms.TextBox textBox1;
+        private System.Windows.Forms.Label label3;
+        private System.Windows.Forms.Button Cmd_ReadAll;
     }
 }
 
