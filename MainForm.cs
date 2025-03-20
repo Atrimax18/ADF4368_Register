@@ -9,6 +9,10 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.IO;
+using Iot.Device.Ft4222;
+using System.Device.Spi;
+using Iot.Device.FtCommon;
+using System.Device.Gpio;
 
 namespace ADF4368_Register
 {
@@ -20,6 +24,18 @@ namespace ADF4368_Register
 
         int selectedHex;
 
+        // Detect all connected FTDI FT4222H devices
+        List<FtDevice> devices;
+        Ft4222Spi spiDriver;
+        GpioController gpioController;
+        SpiConnectionSettings spiSettings;
+        
+        
+        const int Gpio3 = 3;
+        const int ADF4368_SPI_WRITE_CMD = 0x0000;
+        const int ADF4368_SPI_READ_CMD = 0x8000;
+
+
         DataTable dt = new DataTable();
         public MainForm()
         {
@@ -27,6 +43,8 @@ namespace ADF4368_Register
             label2.Text = string.Empty;
             InitDataTable();
             LoadComboBox();
+
+            InitFTDI();
         }
 
         private void LoadComboBox()
@@ -47,7 +65,7 @@ namespace ADF4368_Register
         public void InitDataTable()
         {
             dt.Columns.Add("Index", typeof(int));
-            dt.Columns.Add("Address", typeof(string));
+            dt.Columns.Add("Register", typeof(string));
             dt.Columns.Add("Value", typeof(string));
             dt.Columns.Add("Value byte", typeof(byte));
             dataGridView1.DataSource = dt;
@@ -104,9 +122,13 @@ namespace ADF4368_Register
                     {
                         string registerAddress = parts[0].Trim();
                         string registerValue = parts[1].Trim();
+
+                        int value = Convert.ToInt32(registerAddress, 16);
+                        string convertedregister = $"0x{value:X4}"; // Ensure at least 4 digits
+
                         //byte registerValue = Convert.ToByte(parts[1], 16);//parts[1].Trim();
                         //registers.Add((registerAddress, registerValue));
-                        regDB.Add(registerAddress, registerValue);
+                        regDB.Add(convertedregister, registerValue);
                     }
                 }
             }
@@ -126,6 +148,125 @@ namespace ADF4368_Register
             // Disable the button for values 0x0002 to 0x000D
             Cmd_Write.Enabled = !((selectedHex >= 0x0002 && selectedHex <= 0x000D) || (selectedHex >= 0x0054 && selectedHex <= 0x0063));
             textValue.Enabled = !((selectedHex >= 0x0002 && selectedHex <= 0x000D) || (selectedHex >= 0x0054 && selectedHex <= 0x0063));
+        }
+
+        private void Cmd_ReadAll_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        static byte ReadRegister(Ft4222Spi spi, ushort registerAddress)
+        {
+            // Format the read command: MSB of 24-bit address is 1 (read operation)
+            ushort readCommand = (ushort)(registerAddress | 0x8000); // Set MSB (bit 23) to 1
+
+            byte[] writeBuffer = new byte[]
+            {
+                (byte)(readCommand >> 8),  // High byte of register address
+                (byte)(readCommand & 0xFF), // Low byte of register address
+                0x00  // Dummy byte for reading data
+            };
+
+            byte[] readBuffer = new byte[3]; // 3 bytes: Register Address + Dummy + Read Data
+
+            // Perform SPI transaction
+            spi.TransferFullDuplex(writeBuffer, readBuffer);
+
+            byte receivedData = readBuffer[2]; // Extract the received data byte
+
+            //Console.WriteLine($"SPI Read: Register 0x{registerAddress:X4} -> 0x{receivedData:X2}");
+            return receivedData;
+        }
+
+        private void InitFTDI()
+        {
+            devices = FtCommon.GetDevices();
+
+            if (devices.Count == 0)
+            {
+                label4.Text ="FTDI STATUS: " + "No FT4222H devices found.";
+                return;
+            }
+            else 
+            {
+                var (chip, dll) = Ft4222Common.GetVersions();
+                label4.Text = "FTDI STATUS: " + $"Detected {devices.Count} FT4222H device(s): Chip Version {chip}, Dll version {dll}";
+            }
+
+            //Init ADF4368 board config GPIO3 to OUTPUT and Configuration of 0x0000 register with 0x18 value for 4 wire mode
+            gpioController = new GpioController(PinNumberingScheme.Board, new Ft4222Gpio());
+            // Opening GPIO3
+            gpioController.OpenPin(Gpio3);
+            gpioController.SetPinMode(Gpio3, PinMode.Output);
+
+            //SET GPIO3 HIGH
+            gpioController.Write(Gpio3, PinValue.High);
+
+            //SPI configuration 
+            var spiSettings = new SpiConnectionSettings(0, 1)
+            {
+                ClockFrequency = 3750000,//ClockDiv16, // 7500000 ClockDiv8, 1875000 ClockDiv32// SPI Clock: System Clock / 16
+                Mode = SpiMode.Mode0, // SPI Mode 0 (CPOL = 0, CPHA = 0)
+                DataBitLength = 8, // 8-bit data per transaction
+                
+            };
+
+            // Configure GPIO3 as an output
+
+            spiDriver = new Ft4222Spi(spiSettings);
+            
+            byte nulladress = 0x0000;
+            WriteRegister(spiDriver, nulladress, 0x18);
+
+            // Example: Write data to register 0x10 with value 0xAB
+            byte registerAddress = 0x000C; // Modify as needed
+            byte receive = ReadRegister(spiDriver, registerAddress); ;
+
+
+            //SET GPIO3 HIGH
+            gpioController.Write(Gpio3, PinValue.High);
+        }
+
+        static void WriteRegister(Ft4222Spi spi, ushort registerAddress, byte data)
+        {
+            // Format the write command: MSB of 24-bit address is 0 (write operation)
+            byte[] buffer = new byte[]
+            {
+                (byte)(registerAddress >> 8),  // High byte of register address
+                (byte)(registerAddress & 0xFF), // Low byte of register address
+                data  // 8-bit data
+            };
+
+            spi.Write(buffer);
+            Console.WriteLine($"SPI Write: Register 0x{registerAddress:X4} <- 0x{data:X2}");
+        }
+
+        private void CleanHexValues()
+        {
+            foreach (DataRow row in dt.Rows)
+            {
+                if (row["Register"] != DBNull.Value)
+                {
+                    string hexString = row["Register"].ToString();
+                    int value = Convert.ToInt32(hexString, 16);
+                    row["Register"] = $"0x{value:X4}"; // Ensure at least 4 digits
+                }
+            }
+        }
+
+        private void UpdateRowValue(byte searchValue, byte newValue)
+        {
+            string hexSearch = $"0x{searchValue:X2}";
+
+            foreach (DataRow row in dt.Rows)
+            {
+                if (row["Register"].ToString() == hexSearch)
+                {
+                    row["Integer Value"] = newValue; // Update the integer column
+                    row["Hex Value"] = $"0x{newValue:X2}"; // Update the hex column to reflect the new value
+                    break; // Exit loop after updating the first match
+                }
+            }
         }
     }
 }

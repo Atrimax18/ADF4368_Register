@@ -40,6 +40,7 @@
             this.Cmd_ReadAll = new System.Windows.Forms.Button();
             this.Cmd_WriteAll = new System.Windows.Forms.Button();
             this.comboBox1 = new System.Windows.Forms.ComboBox();
+            this.label4 = new System.Windows.Forms.Label();
             this.groupBox1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
             this.SuspendLayout();
@@ -142,6 +143,7 @@
             this.Cmd_ReadAll.TabIndex = 8;
             this.Cmd_ReadAll.Text = "Read All";
             this.Cmd_ReadAll.UseVisualStyleBackColor = true;
+            this.Cmd_ReadAll.Click += new System.EventHandler(this.Cmd_ReadAll_Click);
             // 
             // Cmd_WriteAll
             // 
@@ -164,11 +166,21 @@
             this.comboBox1.TabIndex = 10;
             this.comboBox1.SelectedIndexChanged += new System.EventHandler(this.comboBox1_SelectedIndexChanged);
             // 
+            // label4
+            // 
+            this.label4.AutoSize = true;
+            this.label4.Location = new System.Drawing.Point(9, 624);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(80, 13);
+            this.label4.TabIndex = 11;
+            this.label4.Text = "FTDI STATUS:";
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(800, 623);
+            this.ClientSize = new System.Drawing.Size(800, 646);
+            this.Controls.Add(this.label4);
             this.Controls.Add(this.comboBox1);
             this.Controls.Add(this.Cmd_WriteAll);
             this.Controls.Add(this.Cmd_ReadAll);
@@ -204,6 +216,7 @@
         private System.Windows.Forms.Button Cmd_ReadAll;
         private System.Windows.Forms.Button Cmd_WriteAll;
         private System.Windows.Forms.ComboBox comboBox1;
+        private System.Windows.Forms.Label label4;
     }
 }
 
