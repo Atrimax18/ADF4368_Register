@@ -261,9 +261,9 @@ namespace ADF4368_Register
             foreach (DataRow row in dt.Rows)
             {
                 if (row["Register"].ToString() == hexSearch)
-                {
-                    row["Integer Value"] = newValue; // Update the integer column
-                    row["Hex Value"] = $"0x{newValue:X2}"; // Update the hex column to reflect the new value
+                {                    
+                    row["Value"] = $"0x{newValue:X2}"; // Update the hex column to reflect the new value
+                    row["Value byte"] = newValue; // Update the integer column
                     break; // Exit loop after updating the first match
                 }
             }
