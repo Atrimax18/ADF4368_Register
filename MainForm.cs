@@ -46,6 +46,7 @@ namespace ADF4368_Register
 
         public void InitDataTable()
         {
+            dt.Columns.Add("Index", typeof(int));
             dt.Columns.Add("Address", typeof(string));
             dt.Columns.Add("Value", typeof(string));
             dt.Columns.Add("Value byte", typeof(byte));
@@ -70,10 +71,12 @@ namespace ADF4368_Register
                         filepath = ft.FileName;
                         label2.Text = filepath;
                         ParsingFile(filepath);
+                        int index = 0;
 
                         foreach(var kvp in regDB)
                         {
-                            dt.Rows.Add(kvp.Key, kvp.Value, Convert.ToByte(kvp.Value, 16));
+                            index++;
+                            dt.Rows.Add(index, kvp.Key, kvp.Value, Convert.ToByte(kvp.Value, 16));
                         }
                     }
                     
