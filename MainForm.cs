@@ -33,12 +33,12 @@ namespace ADF4368_Register
         List<FtDevice> devices;
         Ft4222Spi spiDriver;
         GpioController gpioController;
-        SpiConnectionSettings spiSettings;
+       // SpiConnectionSettings spiSettings;
         
         
         const int Gpio3 = 3;
-        const int ADF4368_SPI_WRITE_CMD = 0x0000;
-        const int ADF4368_SPI_READ_CMD = 0x8000;
+        //const int ADF4368_SPI_WRITE_CMD = 0x0000;
+        //const int ADF4368_SPI_READ_CMD = 0x8000;
 
 
         bool initflag = false;
@@ -50,7 +50,6 @@ namespace ADF4368_Register
             label2.Text = string.Empty;
             InitDataTable();
             LoadComboBox();
-
             InitFTDI();
 
             initflag = true;
