@@ -98,6 +98,7 @@
             this.Cmd_Write.TabIndex = 3;
             this.Cmd_Write.Text = "Write Register";
             this.Cmd_Write.UseVisualStyleBackColor = true;
+            this.Cmd_Write.Click += new System.EventHandler(this.Cmd_Write_Click);
             // 
             // label1
             // 
@@ -123,6 +124,7 @@
             this.textValue.Name = "textValue";
             this.textValue.Size = new System.Drawing.Size(115, 20);
             this.textValue.TabIndex = 6;
+            this.textValue.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.textValue_KeyPress);
             // 
             // label3
             // 
@@ -148,9 +150,9 @@
             // Cmd_WriteAll
             // 
             this.Cmd_WriteAll.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.Cmd_WriteAll.Location = new System.Drawing.Point(674, 271);
+            this.Cmd_WriteAll.Location = new System.Drawing.Point(673, 260);
             this.Cmd_WriteAll.Name = "Cmd_WriteAll";
-            this.Cmd_WriteAll.Size = new System.Drawing.Size(113, 47);
+            this.Cmd_WriteAll.Size = new System.Drawing.Size(115, 51);
             this.Cmd_WriteAll.TabIndex = 9;
             this.Cmd_WriteAll.Text = "Write All";
             this.Cmd_WriteAll.UseVisualStyleBackColor = true;

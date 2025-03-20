@@ -13,6 +13,9 @@ using Iot.Device.Ft4222;
 using System.Device.Spi;
 using Iot.Device.FtCommon;
 using System.Device.Gpio;
+using System.Globalization;
+using System.Threading;
+using System.Web;
 
 namespace ADF4368_Register
 {
@@ -23,6 +26,8 @@ namespace ADF4368_Register
         Dictionary<string, string> regDB = new Dictionary<string, string>();
 
         int selectedHex;
+
+        string datavalue = string.Empty;
 
         // Detect all connected FTDI FT4222H devices
         List<FtDevice> devices;
@@ -36,6 +41,8 @@ namespace ADF4368_Register
         const int ADF4368_SPI_READ_CMD = 0x8000;
 
 
+        bool initflag = false;
+
         DataTable dt = new DataTable();
         public MainForm()
         {
@@ -45,12 +52,16 @@ namespace ADF4368_Register
             LoadComboBox();
 
             InitFTDI();
+
+            initflag = true;
         }
 
         private void LoadComboBox()
         {
             for (int i = 0x0000; i <= 0x0063; i++)
             {
+                if (i >= 0x0007 && i <= 0x0009)
+                    continue; // Skip values 0x0007 to 0x0009
                 comboBox1.Items.Add($"0x{i:X4}"); // Format as hexadecimal with 4 digits
             }
 
@@ -59,6 +70,10 @@ namespace ADF4368_Register
 
         private void Cmd_Exit_Click(object sender, EventArgs e)
         {
+
+            if (gpioController.Read(Gpio3) == 1)
+                gpioController.Write(Gpio3, PinValue.Low);
+
             Application.ExitThread();
         }
 
@@ -148,11 +163,33 @@ namespace ADF4368_Register
             // Disable the button for values 0x0002 to 0x000D
             Cmd_Write.Enabled = !((selectedHex >= 0x0002 && selectedHex <= 0x000D) || (selectedHex >= 0x0054 && selectedHex <= 0x0063));
             textValue.Enabled = !((selectedHex >= 0x0002 && selectedHex <= 0x000D) || (selectedHex >= 0x0054 && selectedHex <= 0x0063));
+
+
+            if (initflag)
+            {
+                //gpioController.Write(Gpio3, PinValue.High);
+                byte nulladress = 0x0000;
+                WriteRegister(spiDriver, nulladress, 0x18);
+
+                byte valbyte = ReadRegister(spiDriver, (ushort)selectedHex);
+                textValue.Text = $"0x{valbyte:X2}";
+
+                //gpioController.Write(Gpio3, PinValue.Low);
+            }
+            
+
+
         }
 
         private void Cmd_ReadAll_Click(object sender, EventArgs e)
         {
+            foreach(var indstring in comboBox1.Items)
+            {
+                string getcombo = indstring.ToString();
+                selectedHex = Convert.ToInt32(getcombo.Substring(2), 16);
+                byte valbyte = ReadRegister(spiDriver, (ushort)selectedHex);
 
+            }
         }
 
         static byte ReadRegister(Ft4222Spi spi, ushort registerAddress)
@@ -169,6 +206,9 @@ namespace ADF4368_Register
 
             byte[] readBuffer = new byte[3]; // 3 bytes: Register Address + Dummy + Read Data
 
+            //spi.Write(writeBuffer);
+            //Thread.Sleep(100);
+            //spi.Read(readBuffer);
             // Perform SPI transaction
             spi.TransferFullDuplex(writeBuffer, readBuffer);
 
@@ -212,19 +252,18 @@ namespace ADF4368_Register
             };
 
             // Configure GPIO3 as an output
-
             spiDriver = new Ft4222Spi(spiSettings);
             
             byte nulladress = 0x0000;
             WriteRegister(spiDriver, nulladress, 0x18);
 
             // Example: Write data to register 0x10 with value 0xAB
-            byte registerAddress = 0x000D; // Modify as needed
+            byte registerAddress = 0x000C; // Modify as needed
             byte receive = ReadRegister(spiDriver, registerAddress); ;
 
 
             //SET GPIO3 HIGH
-            gpioController.Write(Gpio3, PinValue.High);
+            //gpioController.Write(Gpio3, PinValue.Low);
         }
 
         static void WriteRegister(Ft4222Spi spi, ushort registerAddress, byte data)
@@ -267,6 +306,47 @@ namespace ADF4368_Register
                     break; // Exit loop after updating the first match
                 }
             }
+        }
+
+        private void Cmd_Write_Click(object sender, EventArgs e)
+        {
+            string regadress = comboBox1.SelectedItem?.ToString(); // Get selected value as string            
+            byte databyte = Convert.ToByte(datavalue);
+            if (int.TryParse(regadress, out int intValue))
+            {
+                ushort nvalue = (ushort)intValue;
+                //SET GPIO3 HIGH
+                gpioController.Write(Gpio3, PinValue.High);
+
+                WriteRegister(spiDriver, nvalue, databyte);
+
+                //SET GPIO3 Low
+                gpioController.Write(Gpio3, PinValue.Low);
+            }
+        }
+
+        private void textValue_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            if(e.KeyChar == 13)
+            {
+                if (IsHexString(textValue.Text))
+                {
+                    datavalue = textValue.Text;
+                }
+                else
+                {
+                    textValue.Clear();
+                    datavalue = string.Empty;
+                }
+            }
+        }
+
+        private bool IsHexString(string input)
+        {
+            if (input.StartsWith("0x", StringComparison.OrdinalIgnoreCase))
+                input = input.Substring(2); // Remove "0x" prefix
+
+            return int.TryParse(input, NumberStyles.HexNumber, CultureInfo.InvariantCulture, out _);
         }
     }
 }
