@@ -219,7 +219,7 @@ namespace ADF4368_Register
             WriteRegister(spiDriver, nulladress, 0x18);
 
             // Example: Write data to register 0x10 with value 0xAB
-            byte registerAddress = 0x000C; // Modify as needed
+            byte registerAddress = 0x000D; // Modify as needed
             byte receive = ReadRegister(spiDriver, registerAddress); ;
 
 
