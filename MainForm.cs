@@ -18,12 +18,25 @@ namespace ADF4368_Register
         string filepath = string.Empty;
         Dictionary<string, string> regDB = new Dictionary<string, string>();
 
+        int selectedHex;
+
         DataTable dt = new DataTable();
         public MainForm()
         {
             InitializeComponent();
             label2.Text = string.Empty;
             InitDataTable();
+            LoadComboBox();
+        }
+
+        private void LoadComboBox()
+        {
+            for (int i = 0x0000; i <= 0x0063; i++)
+            {
+                comboBox1.Items.Add($"0x{i:X4}"); // Format as hexadecimal with 4 digits
+            }
+
+            comboBox1.SelectedIndex = 0; // Select the first item by default
         }
 
         private void Cmd_Exit_Click(object sender, EventArgs e)
@@ -100,6 +113,16 @@ namespace ADF4368_Register
         private void Cmd_WriteAll_Click(object sender, EventArgs e)
         {
 
+        }
+
+        private void comboBox1_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            string selectedValue = comboBox1.SelectedItem.ToString();
+            selectedHex = Convert.ToInt32(selectedValue.Substring(2), 16); // Convert hex string to int
+
+            // Disable the button for values 0x0002 to 0x000D
+            Cmd_Write.Enabled = !((selectedHex >= 0x0002 && selectedHex <= 0x000D) || (selectedHex >= 0x0054 && selectedHex <= 0x0063));
+            textValue.Enabled = !((selectedHex >= 0x0002 && selectedHex <= 0x000D) || (selectedHex >= 0x0054 && selectedHex <= 0x0063));
         }
     }
 }
