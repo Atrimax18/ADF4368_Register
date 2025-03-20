@@ -87,8 +87,7 @@ namespace ADF4368_Register
             dt.Columns.Add("Value byte", typeof(byte));
             dataGridView1.DataSource = dt;
             dataGridView1.AutoResizeColumns(DataGridViewAutoSizeColumnsMode.ColumnHeader);
-            dataGridView1.AllowUserToAddRows = false;
-            
+            dataGridView1.AllowUserToAddRows = false;            
         }
 
         private void Cmd_Import_Click(object sender, EventArgs e)
@@ -154,7 +153,18 @@ namespace ADF4368_Register
 
         private void Cmd_WriteAll_Click(object sender, EventArgs e)
         {
+            foreach (DataRow rowdata in dt.Rows)
+            {
+                string regadress = rowdata["Register"].ToString(); // Get selected register as string
+                string regdata = rowdata["Value"].ToString();      // Get selected data value as string
+                byte databyte = Convert.ToByte(regdata);
 
+                if (int.TryParse(regadress, out int intValue))
+                {
+                    ushort nvalue = (ushort)intValue; //register address
+                    WriteRegister(spiDriver, nvalue, databyte);
+                }
+            }
         }
 
         private void comboBox1_SelectedIndexChanged(object sender, EventArgs e)
@@ -168,19 +178,13 @@ namespace ADF4368_Register
 
 
             if (initflag)
-            {
-                //gpioController.Write(Gpio3, PinValue.High);
-                byte nulladress = 0x0000;
-                WriteRegister(spiDriver, nulladress, 0x18);
+            {                
+                //byte nulladress = 0x0000;
+                //WriteRegister(spiDriver, nulladress, 0x18);
 
                 byte valbyte = ReadRegister(spiDriver, (ushort)selectedHex);
-                textValue.Text = $"0x{valbyte:X2}";
-
-                //gpioController.Write(Gpio3, PinValue.Low);
+                textValue.Text = $"0x{valbyte:X2}";                
             }
-            
-
-
         }
 
         private void Cmd_ReadAll_Click(object sender, EventArgs e)
