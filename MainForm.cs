@@ -96,5 +96,10 @@ namespace ADF4368_Register
             }
 
         }
+
+        private void Cmd_WriteAll_Click(object sender, EventArgs e)
+        {
+
+        }
     }
 }

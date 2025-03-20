@@ -35,9 +35,11 @@
             this.Cmd_Write = new System.Windows.Forms.Button();
             this.label1 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
-            this.textBox1 = new System.Windows.Forms.TextBox();
+            this.textValue = new System.Windows.Forms.TextBox();
             this.label3 = new System.Windows.Forms.Label();
             this.Cmd_ReadAll = new System.Windows.Forms.Button();
+            this.Cmd_WriteAll = new System.Windows.Forms.Button();
+            this.comboBox1 = new System.Windows.Forms.ComboBox();
             this.groupBox1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
             this.SuspendLayout();
@@ -86,7 +88,7 @@
             // Cmd_Write
             // 
             this.Cmd_Write.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.Cmd_Write.Location = new System.Drawing.Point(348, 54);
+            this.Cmd_Write.Location = new System.Drawing.Point(445, 45);
             this.Cmd_Write.Name = "Cmd_Write";
             this.Cmd_Write.Size = new System.Drawing.Size(115, 34);
             this.Cmd_Write.TabIndex = 3;
@@ -111,41 +113,62 @@
             this.label2.TabIndex = 5;
             this.label2.Text = "filename";
             // 
-            // textBox1
+            // textValue
             // 
-            this.textBox1.Location = new System.Drawing.Point(227, 62);
-            this.textBox1.Name = "textBox1";
-            this.textBox1.Size = new System.Drawing.Size(115, 20);
-            this.textBox1.TabIndex = 6;
+            this.textValue.Location = new System.Drawing.Point(317, 53);
+            this.textValue.Name = "textValue";
+            this.textValue.Size = new System.Drawing.Size(115, 20);
+            this.textValue.TabIndex = 6;
             // 
             // label3
             // 
             this.label3.AutoSize = true;
             this.label3.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label3.Location = new System.Drawing.Point(15, 63);
+            this.label3.Location = new System.Drawing.Point(15, 54);
             this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(206, 16);
+            this.label3.Size = new System.Drawing.Size(155, 16);
             this.label3.TabIndex = 7;
-            this.label3.Text = "REGISTER ADDRES: 0x0000";
+            this.label3.Text = "REGISTER ADDRES:";
             // 
             // Cmd_ReadAll
             // 
             this.Cmd_ReadAll.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.Cmd_ReadAll.Location = new System.Drawing.Point(676, 216);
+            this.Cmd_ReadAll.Location = new System.Drawing.Point(673, 203);
             this.Cmd_ReadAll.Name = "Cmd_ReadAll";
-            this.Cmd_ReadAll.Size = new System.Drawing.Size(111, 40);
+            this.Cmd_ReadAll.Size = new System.Drawing.Size(115, 51);
             this.Cmd_ReadAll.TabIndex = 8;
             this.Cmd_ReadAll.Text = "Read All";
             this.Cmd_ReadAll.UseVisualStyleBackColor = true;
+            // 
+            // Cmd_WriteAll
+            // 
+            this.Cmd_WriteAll.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.Cmd_WriteAll.Location = new System.Drawing.Point(674, 271);
+            this.Cmd_WriteAll.Name = "Cmd_WriteAll";
+            this.Cmd_WriteAll.Size = new System.Drawing.Size(113, 47);
+            this.Cmd_WriteAll.TabIndex = 9;
+            this.Cmd_WriteAll.Text = "Write All";
+            this.Cmd_WriteAll.UseVisualStyleBackColor = true;
+            this.Cmd_WriteAll.Click += new System.EventHandler(this.Cmd_WriteAll_Click);
+            // 
+            // comboBox1
+            // 
+            this.comboBox1.FormattingEnabled = true;
+            this.comboBox1.Location = new System.Drawing.Point(176, 53);
+            this.comboBox1.Name = "comboBox1";
+            this.comboBox1.Size = new System.Drawing.Size(121, 21);
+            this.comboBox1.TabIndex = 10;
             // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(800, 623);
+            this.Controls.Add(this.comboBox1);
+            this.Controls.Add(this.Cmd_WriteAll);
             this.Controls.Add(this.Cmd_ReadAll);
             this.Controls.Add(this.label3);
-            this.Controls.Add(this.textBox1);
+            this.Controls.Add(this.textValue);
             this.Controls.Add(this.label2);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.Cmd_Write);
@@ -171,9 +194,11 @@
         private System.Windows.Forms.Button Cmd_Write;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Label label2;
-        private System.Windows.Forms.TextBox textBox1;
+        private System.Windows.Forms.TextBox textValue;
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.Button Cmd_ReadAll;
+        private System.Windows.Forms.Button Cmd_WriteAll;
+        private System.Windows.Forms.ComboBox comboBox1;
     }
 }
 
