@@ -16,6 +16,7 @@ using System.Device.Gpio;
 using System.Globalization;
 using System.Threading;
 using System.Web;
+using static Iot.Device.HardwareMonitor.OpenHardwareMonitor;
 
 namespace ADF4368_Register
 {
@@ -52,7 +53,7 @@ namespace ADF4368_Register
             LoadComboBox();
             InitFTDI();
 
-            initflag = true;
+            //initflag = true;
         }
 
         private void LoadComboBox()
@@ -69,9 +70,11 @@ namespace ADF4368_Register
 
         private void Cmd_Exit_Click(object sender, EventArgs e)
         {
-
-            if (gpioController.Read(Gpio3) == 1)
-                gpioController.Write(Gpio3, PinValue.Low);
+            if (initflag)
+            {
+                if (gpioController.Read(Gpio3) == 1)
+                    gpioController.Write(Gpio3, PinValue.Low);
+            }
 
             Application.ExitThread();
         }
@@ -182,12 +185,32 @@ namespace ADF4368_Register
 
         private void Cmd_ReadAll_Click(object sender, EventArgs e)
         {
-            foreach(var indstring in comboBox1.Items)
+            int index = 1;
+
+            if (dataGridView1.Rows.Count > 0)
             {
+                dataGridView1.DataSource = null;
+                dataGridView1.Rows.Clear();       // Remove all rows
+                dt.Clear();
+
+                dataGridView1.DataSource = dt;
+            }
+                
+            
+            foreach (var indstring in comboBox1.Items)
+            {
+                
                 string getcombo = indstring.ToString();
                 selectedHex = Convert.ToInt32(getcombo.Substring(2), 16);
-                byte valbyte = ReadRegister(spiDriver, (ushort)selectedHex);
-
+                //byte valbyte = ReadRegister(spiDriver, (ushort)selectedHex);
+                byte valbyte = 0x1F;
+                // Add the data to the DataTable
+                DataRow row = dt.NewRow();
+                row["Index"] = index++.ToString();
+                row["Register"] = getcombo;
+                row["Value"] = $"0x{valbyte:X2}";//Convert.ToString(valbyte);
+                row["Value byte"] = valbyte;
+                dt.Rows.Add(row);
             }
         }
 
@@ -223,13 +246,19 @@ namespace ADF4368_Register
 
             if (devices.Count == 0)
             {
+                label4.ForeColor = Color.Red;
                 label4.Text ="FTDI STATUS: " + "No FT4222H devices found.";
+                comboBox1.Enabled = false;
+                initflag = false;
                 return;
             }
             else 
             {
                 var (chip, dll) = Ft4222Common.GetVersions();
+                label4.ForeColor= Color.Green;
                 label4.Text = "FTDI STATUS: " + $"Detected {devices.Count} FT4222H device(s): Chip Version {chip}, Dll version {dll}";
+                initflag = true;
+                comboBox1.Enabled = true;
             }
 
             //Init ADF4368 board config GPIO3 to OUTPUT and Configuration of 0x0000 register with 0x18 value for 4 wire mode
@@ -311,16 +340,11 @@ namespace ADF4368_Register
         {
             string regadress = comboBox1.SelectedItem?.ToString(); // Get selected value as string            
             byte databyte = Convert.ToByte(datavalue);
+            
             if (int.TryParse(regadress, out int intValue))
             {
-                ushort nvalue = (ushort)intValue;
-                //SET GPIO3 HIGH
-                gpioController.Write(Gpio3, PinValue.High);
-
-                WriteRegister(spiDriver, nvalue, databyte);
-
-                //SET GPIO3 Low
-                gpioController.Write(Gpio3, PinValue.Low);
+                ushort nvalue = (ushort)intValue; //register address
+                WriteRegister(spiDriver, nvalue, databyte);                
             }
         }
 
@@ -346,6 +370,18 @@ namespace ADF4368_Register
                 input = input.Substring(2); // Remove "0x" prefix
 
             return int.TryParse(input, NumberStyles.HexNumber, CultureInfo.InvariantCulture, out _);
+        }
+
+        private void Cmd_PowerSwitch_Click(object sender, EventArgs e)
+        {
+            if(Cmd_PowerSwitch.Text.Equals("RF POWER ON"))
+            {
+                Cmd_PowerSwitch.Text = "RF POWER OFF";
+            }
+            else
+            {
+                Cmd_PowerSwitch.Text = "RF POWER ON";
+            }
         }
     }
 }

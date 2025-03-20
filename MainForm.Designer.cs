@@ -41,6 +41,7 @@
             this.Cmd_WriteAll = new System.Windows.Forms.Button();
             this.comboBox1 = new System.Windows.Forms.ComboBox();
             this.label4 = new System.Windows.Forms.Label();
+            this.Cmd_PowerSwitch = new System.Windows.Forms.Button();
             this.groupBox1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
             this.SuspendLayout();
@@ -177,11 +178,23 @@
             this.label4.TabIndex = 11;
             this.label4.Text = "FTDI STATUS:";
             // 
+            // Cmd_PowerSwitch
+            // 
+            this.Cmd_PowerSwitch.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.Cmd_PowerSwitch.Location = new System.Drawing.Point(673, 375);
+            this.Cmd_PowerSwitch.Name = "Cmd_PowerSwitch";
+            this.Cmd_PowerSwitch.Size = new System.Drawing.Size(115, 51);
+            this.Cmd_PowerSwitch.TabIndex = 12;
+            this.Cmd_PowerSwitch.Text = "RF POWER ON";
+            this.Cmd_PowerSwitch.UseVisualStyleBackColor = true;
+            this.Cmd_PowerSwitch.Click += new System.EventHandler(this.Cmd_PowerSwitch_Click);
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(800, 646);
+            this.Controls.Add(this.Cmd_PowerSwitch);
             this.Controls.Add(this.label4);
             this.Controls.Add(this.comboBox1);
             this.Controls.Add(this.Cmd_WriteAll);
@@ -219,6 +232,7 @@
         private System.Windows.Forms.Button Cmd_WriteAll;
         private System.Windows.Forms.ComboBox comboBox1;
         private System.Windows.Forms.Label label4;
+        private System.Windows.Forms.Button Cmd_PowerSwitch;
     }
 }
 
