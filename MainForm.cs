@@ -17,6 +17,7 @@ using System.Globalization;
 using System.Threading;
 using System.Web;
 using static Iot.Device.HardwareMonitor.OpenHardwareMonitor;
+using UnitsNet;
 
 namespace ADF4368_Register
 {
@@ -140,9 +141,11 @@ namespace ADF4368_Register
 
                     string[] parts = line.Split(',');
 
+                    int value = Convert.ToInt32(parts[0].Trim().Substring(2), 16);
+
                     if (parts.Length == 3)
                     {
-                        dt.Rows.Add(index++.ToString() ,parts[0].Trim(), parts[1].Trim(), Convert.ToByte(parts[1].Trim(), 16));
+                        dt.Rows.Add(index++.ToString() , $"0x{value:X4}", parts[1].Trim(), Convert.ToByte(parts[1].Trim(), 16));
                     }
                 }
             }
@@ -151,6 +154,8 @@ namespace ADF4368_Register
 
         private void Cmd_WriteAll_Click(object sender, EventArgs e)
         {
+
+            /*
             foreach (DataRow rowdata in dt.Rows)
             {
                 string regadress = rowdata["Register"].ToString(); // Get selected register as string
@@ -161,6 +166,22 @@ namespace ADF4368_Register
 
                 WriteRegister(spiDriver, regValue, databyte);
                 
+            }*/
+
+            var filteredRows = dt.AsEnumerable().Where(row =>
+            {
+                string hexStr = row["Register"].ToString();      // e.g. "0x0053"
+                int reg = Convert.ToInt32(hexStr.Substring(2), 16); // Convert to int
+                return reg >= 0x10 && reg <= 0x53;
+            }).OrderByDescending(row =>
+                Convert.ToInt32(row["Register"].ToString().Substring(2), 16) // Sort descending
+            );
+
+            foreach (var row in filteredRows)
+            {
+                string hex = row["Register"].ToString();
+                string val = row["Value"].ToString();
+                Console.WriteLine($"Hex: {hex}, Value: {val}");
             }
         }
 
