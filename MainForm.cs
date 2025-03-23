@@ -254,6 +254,10 @@ namespace ADF4368_Register
                 label4.Text ="FTDI STATUS: " + "No FT4222H devices found.";
                 comboBox1.Enabled = false;
                 initflag = false;
+                Cmd_Write.Enabled = false;
+                Cmd_Import.Enabled = false;
+                textValue.Enabled = false;  
+                Cmd_ReadAll.Enabled = false;
                 return;
             }
             else 
