@@ -78,4 +78,4 @@ This is a Windows Forms application for interfacing with Analog Devices' **ADF43
 
 ## License
 
-MIT License
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
