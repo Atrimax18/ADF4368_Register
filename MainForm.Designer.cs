@@ -180,6 +180,7 @@
             // 
             // Cmd_PowerSwitch
             // 
+            this.Cmd_PowerSwitch.Enabled = false;
             this.Cmd_PowerSwitch.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.Cmd_PowerSwitch.Location = new System.Drawing.Point(673, 375);
             this.Cmd_PowerSwitch.Name = "Cmd_PowerSwitch";

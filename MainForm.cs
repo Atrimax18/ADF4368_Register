@@ -24,7 +24,7 @@ namespace ADF4368_Register
     {
 
         string filepath = string.Empty;
-        Dictionary<string, string> regDB = new Dictionary<string, string>();
+        //Dictionary<string, string> regDB = new Dictionary<string, string>();
 
         int selectedHex;
 
@@ -102,16 +102,17 @@ namespace ADF4368_Register
 
                     if (ft.ShowDialog() == DialogResult.OK)
                     {
+                        
+                        if (dt.Rows.Count != 0)
+                        {
+                            
+                            dt.Clear();
+                        }
+                            
                         filepath = ft.FileName;
                         label2.Text = filepath;
-                        ParsingFile(filepath);
-                        int index = 0;
-
-                        foreach(var kvp in regDB)
-                        {
-                            index++;
-                            dt.Rows.Add(index, kvp.Key, kvp.Value, Convert.ToByte(kvp.Value, 16));
-                        }
+                        ParsingFile(filepath);                   
+                        
                     }
                     
                 }
@@ -131,20 +132,17 @@ namespace ADF4368_Register
             }
             else
             {
+                
+                int index = 1;
                 foreach (var line in File.ReadLines(file))
                 {
-                    var parts = line.Split(',');
-                    if (parts.Length >= 2)
+                    if (string.IsNullOrWhiteSpace(line)) continue;
+
+                    string[] parts = line.Split(',');
+
+                    if (parts.Length == 3)
                     {
-                        string registerAddress = parts[0].Trim();
-                        string registerValue = parts[1].Trim();
-
-                        int value = Convert.ToInt32(registerAddress, 16);
-                        string convertedregister = $"0x{value:X4}"; // Ensure at least 4 digits
-
-                        //byte registerValue = Convert.ToByte(parts[1], 16);//parts[1].Trim();
-                        //registers.Add((registerAddress, registerValue));
-                        regDB.Add(convertedregister, registerValue);
+                        dt.Rows.Add(index++.ToString() ,parts[0].Trim(), parts[1].Trim(), Convert.ToByte(parts[1].Trim(), 16));
                     }
                 }
             }
@@ -157,13 +155,12 @@ namespace ADF4368_Register
             {
                 string regadress = rowdata["Register"].ToString(); // Get selected register as string
                 string regdata = rowdata["Value"].ToString();      // Get selected data value as string
-                byte databyte = Convert.ToByte(regdata);
 
-                if (int.TryParse(regadress, out int intValue))
-                {
-                    ushort nvalue = (ushort)intValue; //register address
-                    WriteRegister(spiDriver, nvalue, databyte);
-                }
+                ushort regValue = Convert.ToUInt16(regadress.Replace("0x", ""), 16);
+                byte databyte = Convert.ToByte(regdata.Replace("0x", ""), 16);
+
+                WriteRegister(spiDriver, regValue, databyte);
+                
             }
         }
 
@@ -176,12 +173,8 @@ namespace ADF4368_Register
             Cmd_Write.Enabled = !((selectedHex >= 0x0002 && selectedHex <= 0x000D) || (selectedHex >= 0x0054 && selectedHex <= 0x0063));
             textValue.Enabled = !((selectedHex >= 0x0002 && selectedHex <= 0x000D) || (selectedHex >= 0x0054 && selectedHex <= 0x0063));
 
-
             if (initflag)
             {                
-                //byte nulladress = 0x0000;
-                //WriteRegister(spiDriver, nulladress, 0x18);
-
                 byte valbyte = ReadRegister(spiDriver, (ushort)selectedHex);
                 textValue.Text = $"0x{valbyte:X2}";                
             }
@@ -194,12 +187,12 @@ namespace ADF4368_Register
             if (dataGridView1.Rows.Count > 0)
             {
                 dataGridView1.DataSource = null;
-                dataGridView1.Rows.Clear();       // Remove all rows
+                //dataGridView1.Rows.Clear();       // Remove all rows
                 dt.Clear();
+                
 
                 dataGridView1.DataSource = dt;
-            }
-                
+            }                
             
             foreach (var indstring in comboBox1.Items)
             {
@@ -231,10 +224,7 @@ namespace ADF4368_Register
             };
 
             byte[] readBuffer = new byte[3]; // 3 bytes: Register Address + Dummy + Read Data
-
-            //spi.Write(writeBuffer);
-            //Thread.Sleep(100);
-            //spi.Read(readBuffer);
+            
             // Perform SPI transaction
             spi.TransferFullDuplex(writeBuffer, readBuffer);
 
@@ -343,13 +333,12 @@ namespace ADF4368_Register
         private void Cmd_Write_Click(object sender, EventArgs e)
         {
             string regadress = comboBox1.SelectedItem?.ToString(); // Get selected value as string            
-            byte databyte = Convert.ToByte(datavalue);
+            ushort regValue = Convert.ToUInt16(regadress.Replace("0x", ""), 16);
+            byte databyte = Convert.ToByte(datavalue.Replace("0x", ""), 16);
+
             
-            if (int.TryParse(regadress, out int intValue))
-            {
-                ushort nvalue = (ushort)intValue; //register address
-                WriteRegister(spiDriver, nvalue, databyte);                
-            }
+            WriteRegister(spiDriver, regValue, databyte);                
+            
         }
 
         private void textValue_KeyPress(object sender, KeyPressEventArgs e)
@@ -358,12 +347,14 @@ namespace ADF4368_Register
             {
                 if (IsHexString(textValue.Text))
                 {
-                    datavalue = textValue.Text;
+                    datavalue = textValue.Text.ToUpper();
+                    Cmd_Write.Focus();
                 }
                 else
                 {
                     textValue.Clear();
                     datavalue = string.Empty;
+                    textValue.Focus();
                 }
             }
         }
