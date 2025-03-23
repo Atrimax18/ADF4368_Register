@@ -152,20 +152,6 @@ namespace ADF4368_Register
 
         private void Cmd_WriteAll_Click(object sender, EventArgs e)
         {
-            
-                /*
-                foreach (DataRow rowdata in dt.Rows)
-                {
-                    string regadress = rowdata["Register"].ToString(); // Get selected register as string
-                    string regdata = rowdata["Value"].ToString();      // Get selected data value as string
-
-                    ushort regValue = Convert.ToUInt16(regadress.Replace("0x", ""), 16);
-                    byte databyte = Convert.ToByte(regdata.Replace("0x", ""), 16);
-
-                    WriteRegister(spiDriver, regValue, databyte);
-
-                }*/
-
                 var filteredRows = dt.AsEnumerable().Where(row =>
                 {
                     string hexStr = row["Register"].ToString();      // e.g. "0x0053"
@@ -180,15 +166,12 @@ namespace ADF4368_Register
                     string reghex = row["Register"].ToString();
                     string val = row["Value"].ToString();
 
-
                     ushort regValue = Convert.ToUInt16(reghex.Replace("0x", ""), 16);
                     byte databyte = Convert.ToByte(val.Replace("0x", ""), 16);
 
-
                     WriteRegister(spiDriver, regValue, databyte);
                     //Console.WriteLine($"Hex: {hex}, Value: {val}");
-                }
-            
+                }            
         }
 
         private void comboBox1_SelectedIndexChanged(object sender, EventArgs e)
@@ -214,10 +197,8 @@ namespace ADF4368_Register
             if (dataGridView1.Rows.Count > 0)
             {
                 dataGridView1.DataSource = null;
-                //dataGridView1.Rows.Clear();       // Remove all rows
                 dt.Clear();
                 
-
                 dataGridView1.DataSource = dt;
             }                
             
@@ -227,12 +208,11 @@ namespace ADF4368_Register
                 string getcombo = indstring.ToString();
                 selectedHex = Convert.ToInt32(getcombo.Substring(2), 16);
                 byte valbyte = ReadRegister(spiDriver, (ushort)selectedHex);
-                //byte valbyte = 0x1F;
-                // Add the data to the DataTable
+                
                 DataRow row = dt.NewRow();
                 row["Index"] = index++.ToString();
                 row["Register"] = getcombo;
-                row["Value"] = $"0x{valbyte:X2}";//Convert.ToString(valbyte);
+                row["Value"] = $"0x{valbyte:X2}";
                 row["Value byte"] = valbyte;
                 dt.Rows.Add(row);                
             }
@@ -303,7 +283,7 @@ namespace ADF4368_Register
                 
             };
 
-            // Configure GPIO3 as an output
+            // Setup SPI communication FTDI A
             spiDriver = new Ft4222Spi(spiSettings);
             
             byte nulladress = 0x0000;
@@ -311,11 +291,9 @@ namespace ADF4368_Register
 
             // Example: Write data to register 0x10 with value 0xAB
             byte registerAddress = 0x000C; // Modify as needed
-            byte receive = ReadRegister(spiDriver, registerAddress); ;
+            byte receive = ReadRegister(spiDriver, registerAddress);
 
-
-            //SET GPIO3 HIGH
-            //gpioController.Write(Gpio3, PinValue.Low);
+            
         }
 
         static void WriteRegister(Ft4222Spi spi, ushort registerAddress, byte data)
@@ -330,45 +308,15 @@ namespace ADF4368_Register
 
             spi.Write(buffer);
             Console.WriteLine($"SPI Write: Register 0x{registerAddress:X4} <- 0x{data:X2}");
-        }
-
-        private void CleanHexValues()
-        {
-            foreach (DataRow row in dt.Rows)
-            {
-                if (row["Register"] != DBNull.Value)
-                {
-                    string hexString = row["Register"].ToString();
-                    int value = Convert.ToInt32(hexString, 16);
-                    row["Register"] = $"0x{value:X4}"; // Ensure at least 4 digits
-                }
-            }
-        }
-
-        private void UpdateRowValue(byte searchValue, byte newValue)
-        {
-            string hexSearch = $"0x{searchValue:X2}";
-
-            foreach (DataRow row in dt.Rows)
-            {
-                if (row["Register"].ToString() == hexSearch)
-                {                    
-                    row["Value"] = $"0x{newValue:X2}"; // Update the hex column to reflect the new value
-                    row["Value byte"] = newValue; // Update the integer column
-                    break; // Exit loop after updating the first match
-                }
-            }
-        }
-
+        }        
+        
         private void Cmd_Write_Click(object sender, EventArgs e)
         {
             string regadress = comboBox1.SelectedItem?.ToString(); // Get selected value as string            
             ushort regValue = Convert.ToUInt16(regadress.Replace("0x", ""), 16);
             byte databyte = Convert.ToByte(datavalue.Replace("0x", ""), 16);
-
             
-            WriteRegister(spiDriver, regValue, databyte);                
-            
+            WriteRegister(spiDriver, regValue, databyte);            
         }
 
         private void textValue_KeyPress(object sender, KeyPressEventArgs e)
