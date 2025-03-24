@@ -223,6 +223,7 @@
             // 
             // Cmd_Export
             // 
+            this.Cmd_Export.Enabled = false;
             this.Cmd_Export.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.Cmd_Export.Location = new System.Drawing.Point(673, 195);
             this.Cmd_Export.Name = "Cmd_Export";

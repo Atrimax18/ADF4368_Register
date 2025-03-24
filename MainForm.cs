@@ -115,6 +115,7 @@ namespace ADF4368_Register
                         {
                             Cmd_WriteAll.Enabled = true;
                             Cmd_PowerSwitch.Enabled = true;
+                            Cmd_Export.Enabled = true;
                         }
                     }                    
                 }
