@@ -308,7 +308,6 @@ namespace ADF4368_Register
             // Example: Write data to register 0x10 with value 0xAB
             byte registerAddress = 0x000C; // Modify as needed
             byte receive = ReadRegister(spiDriver, registerAddress);
-
             
         }
 
@@ -408,7 +407,50 @@ namespace ADF4368_Register
 
         private void Cmd_Export_Click(object sender, EventArgs e)
         {
+            SaveDataTableToCsv(dt);
+        }
 
+        private void SaveDataTableToCsv(DataTable table)
+        {
+            using (SaveFileDialog saveDialog = new SaveFileDialog())
+            {
+                saveDialog.InitialDirectory = Directory.GetCurrentDirectory();
+                saveDialog.Filter = "CSV files (*.csv)|*.csv|All files (*.*)|*.*";
+                saveDialog.Title = "Save CSV File";
+                saveDialog.FileName = "register_dump.csv";
+
+                if (saveDialog.ShowDialog() == DialogResult.OK)
+                {
+                    try
+                    {
+                        StringBuilder csvContent = new StringBuilder();
+
+                        // Optional: Add header row
+                        // csvContent.AppendLine("Address,Value,Label");
+
+                        foreach (DataRow row in table.Rows)
+                        {
+                            string regStr = row["Register"].ToString(); // e.g. "0x0023"
+                            string valStr = row["Value"].ToString();    // e.g. "0x0F"
+
+                            int regInt = Convert.ToInt32(regStr.Substring(2), 16); // Convert "0x0023" to int
+                            string regHexFull = $"0x{regInt:X8}"; // Format to 8-digit hex
+
+                            // You can dynamically name or hardcode the label
+                            string label = "RegMap1";
+
+                            csvContent.AppendLine($"{regHexFull},{valStr},{label}");
+                        }
+
+                        File.WriteAllText(saveDialog.FileName, csvContent.ToString());
+                        MessageBox.Show("CSV exported successfully!", "Export", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    }
+                    catch (Exception ex)
+                    {
+                        MessageBox.Show("Error saving CSV: " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    }
+                }
+            }
         }
     }
 }
