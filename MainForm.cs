@@ -316,11 +316,25 @@ namespace ADF4368_Register
         
         private void Cmd_Write_Click(object sender, EventArgs e)
         {
-            string regadress = comboBox1.SelectedItem?.ToString(); // Get selected value as string            
-            ushort regValue = Convert.ToUInt16(regadress.Replace("0x", ""), 16);
+            string regaddress = comboBox1.SelectedItem?.ToString(); // Get selected value as string            
+            ushort regValue = Convert.ToUInt16(regaddress.Replace("0x", ""), 16);
             byte databyte = Convert.ToByte(datavalue.Replace("0x", ""), 16);
             
-            WriteRegister(spiDriver, regValue, databyte);            
+            WriteRegister(spiDriver, regValue, databyte);
+
+            if (regaddress == "0x002B")
+            {
+                if (databyte == 0x00)
+                {
+                    Cmd_PowerSwitch.Text = "RF POWER ON";
+                    radioButton2.Checked = true;
+                }
+                else 
+                {
+                    Cmd_PowerSwitch.Text = "RF POWER OFF";
+                    radioButton2.Checked = false;
+                }
+            }
         }
 
         private void textValue_KeyPress(object sender, KeyPressEventArgs e)
@@ -353,17 +367,30 @@ namespace ADF4368_Register
         {
             if(Cmd_PowerSwitch.Text.Equals("RF POWER ON"))
             {
-                Cmd_PowerSwitch.Text = "RF POWER OFF";
+                
                 byte poweraddress = 0x002B;
                 WriteRegister(spiDriver, poweraddress, 0x83);
-                radioButton2.Checked = false;
+                Thread.Sleep(100);
+                byte powerreturn = ReadRegister(spiDriver, poweraddress);
+
+                if (powerreturn != 0)
+                {
+                    Cmd_PowerSwitch.Text = "RF POWER OFF";
+                    radioButton2.Checked = false;
+                }
             }
             else
-            {
-                Cmd_PowerSwitch.Text = "RF POWER ON";
+            {                
                 byte poweraddress = 0x002B;
                 WriteRegister(spiDriver, poweraddress, 0x00);
-                radioButton2.Checked = true;
+                Thread.Sleep(100);
+                byte powerreturn = ReadRegister(spiDriver, poweraddress);
+
+                if (powerreturn == 0x00)
+                {
+                    Cmd_PowerSwitch.Text = "RF POWER ON";
+                    radioButton2.Checked = true;
+                }
             }
         }
     }
