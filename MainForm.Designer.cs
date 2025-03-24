@@ -44,6 +44,7 @@
             this.Cmd_PowerSwitch = new System.Windows.Forms.Button();
             this.radioButton1 = new System.Windows.Forms.RadioButton();
             this.radioButton2 = new System.Windows.Forms.RadioButton();
+            this.Cmd_Export = new System.Windows.Forms.Button();
             this.groupBox1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
             this.SuspendLayout();
@@ -84,7 +85,7 @@
             // Cmd_Import
             // 
             this.Cmd_Import.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.Cmd_Import.Location = new System.Drawing.Point(673, 146);
+            this.Cmd_Import.Location = new System.Drawing.Point(673, 138);
             this.Cmd_Import.Name = "Cmd_Import";
             this.Cmd_Import.Size = new System.Drawing.Size(115, 51);
             this.Cmd_Import.TabIndex = 2;
@@ -144,7 +145,7 @@
             // Cmd_ReadAll
             // 
             this.Cmd_ReadAll.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.Cmd_ReadAll.Location = new System.Drawing.Point(673, 203);
+            this.Cmd_ReadAll.Location = new System.Drawing.Point(673, 257);
             this.Cmd_ReadAll.Name = "Cmd_ReadAll";
             this.Cmd_ReadAll.Size = new System.Drawing.Size(115, 51);
             this.Cmd_ReadAll.TabIndex = 8;
@@ -156,7 +157,7 @@
             // 
             this.Cmd_WriteAll.Enabled = false;
             this.Cmd_WriteAll.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.Cmd_WriteAll.Location = new System.Drawing.Point(673, 260);
+            this.Cmd_WriteAll.Location = new System.Drawing.Point(673, 314);
             this.Cmd_WriteAll.Name = "Cmd_WriteAll";
             this.Cmd_WriteAll.Size = new System.Drawing.Size(115, 51);
             this.Cmd_WriteAll.TabIndex = 9;
@@ -185,9 +186,8 @@
             // 
             // Cmd_PowerSwitch
             // 
-            this.Cmd_PowerSwitch.Enabled = false;
             this.Cmd_PowerSwitch.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.Cmd_PowerSwitch.Location = new System.Drawing.Point(673, 375);
+            this.Cmd_PowerSwitch.Location = new System.Drawing.Point(673, 429);
             this.Cmd_PowerSwitch.Name = "Cmd_PowerSwitch";
             this.Cmd_PowerSwitch.Size = new System.Drawing.Size(115, 51);
             this.Cmd_PowerSwitch.TabIndex = 12;
@@ -213,7 +213,7 @@
             // 
             this.radioButton2.AutoSize = true;
             this.radioButton2.Enabled = false;
-            this.radioButton2.Location = new System.Drawing.Point(684, 352);
+            this.radioButton2.Location = new System.Drawing.Point(684, 406);
             this.radioButton2.Name = "radioButton2";
             this.radioButton2.Size = new System.Drawing.Size(89, 17);
             this.radioButton2.TabIndex = 14;
@@ -221,11 +221,23 @@
             this.radioButton2.Text = "POWER OFF";
             this.radioButton2.UseVisualStyleBackColor = true;
             // 
+            // Cmd_Export
+            // 
+            this.Cmd_Export.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.Cmd_Export.Location = new System.Drawing.Point(673, 195);
+            this.Cmd_Export.Name = "Cmd_Export";
+            this.Cmd_Export.Size = new System.Drawing.Size(114, 51);
+            this.Cmd_Export.TabIndex = 15;
+            this.Cmd_Export.Text = "Export Files";
+            this.Cmd_Export.UseVisualStyleBackColor = true;
+            this.Cmd_Export.Click += new System.EventHandler(this.Cmd_Export_Click);
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(800, 646);
+            this.Controls.Add(this.Cmd_Export);
             this.Controls.Add(this.radioButton2);
             this.Controls.Add(this.radioButton1);
             this.Controls.Add(this.Cmd_PowerSwitch);
@@ -269,6 +281,7 @@
         private System.Windows.Forms.Button Cmd_PowerSwitch;
         private System.Windows.Forms.RadioButton radioButton1;
         private System.Windows.Forms.RadioButton radioButton2;
+        private System.Windows.Forms.Button Cmd_Export;
     }
 }
 

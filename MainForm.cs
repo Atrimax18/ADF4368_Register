@@ -18,6 +18,8 @@ using System.Threading;
 using System.Web;
 using static Iot.Device.HardwareMonitor.OpenHardwareMonitor;
 using UnitsNet;
+using Iot.Device.Mcp25xxx.Register;
+using System.Net;
 
 namespace ADF4368_Register
 {
@@ -112,6 +114,7 @@ namespace ADF4368_Register
                         if (dt.Rows.Count != 0)
                         {
                             Cmd_WriteAll.Enabled = true;
+                            Cmd_PowerSwitch.Enabled = true;
                         }
                     }                    
                 }
@@ -120,7 +123,6 @@ namespace ADF4368_Register
                     MessageBox.Show(ex.Message, "Warning");
                 }
             }
-
         }
 
         public void ParsingFile(string file)
@@ -152,26 +154,28 @@ namespace ADF4368_Register
 
         private void Cmd_WriteAll_Click(object sender, EventArgs e)
         {
-                var filteredRows = dt.AsEnumerable().Where(row =>
+            var filteredRows = dt.AsEnumerable().Where(row =>
+            {
+                string hexStr = row["Register"].ToString();      // e.g. "0x0053"
+                int reg = Convert.ToInt32(hexStr.Substring(2), 16); // Convert to int
+                return reg >= 0x10 && reg <= 0x53;}).OrderByDescending(row => Convert.ToInt32(row["Register"].ToString().Substring(2), 16) // Sort descending
+            );
+
+            foreach (var row in filteredRows)
+            {
+                string reghex = row["Register"].ToString();
+                string val = row["Value"].ToString();
+                byte paddress = Convert.ToByte(reghex.Replace("0x", ""), 16);
+                ushort regValue = Convert.ToUInt16(reghex.Replace("0x", ""), 16);
+                byte databyte = Convert.ToByte(val.Replace("0x", ""), 16);
+
+                WriteRegister(spiDriver, regValue, databyte);
+
+                if (paddress == 0x002B)
                 {
-                    string hexStr = row["Register"].ToString();      // e.g. "0x0053"
-                    int reg = Convert.ToInt32(hexStr.Substring(2), 16); // Convert to int
-                    return reg >= 0x10 && reg <= 0x53;
-                }).OrderByDescending(row =>
-                    Convert.ToInt32(row["Register"].ToString().Substring(2), 16) // Sort descending
-                );
-
-                foreach (var row in filteredRows)
-                {
-                    string reghex = row["Register"].ToString();
-                    string val = row["Value"].ToString();
-
-                    ushort regValue = Convert.ToUInt16(reghex.Replace("0x", ""), 16);
-                    byte databyte = Convert.ToByte(val.Replace("0x", ""), 16);
-
-                    WriteRegister(spiDriver, regValue, databyte);
-                    //Console.WriteLine($"Hex: {hex}, Value: {val}");
-                }            
+                    CheckPowerRegister(paddress);
+                }                
+            }            
         }
 
         private void comboBox1_SelectedIndexChanged(object sender, EventArgs e)
@@ -192,7 +196,7 @@ namespace ADF4368_Register
 
         private void Cmd_ReadAll_Click(object sender, EventArgs e)
         {
-            int index = 1;
+            int index = 1; byte paddress = 0;
 
             if (dataGridView1.Rows.Count > 0)
             {
@@ -207,6 +211,7 @@ namespace ADF4368_Register
                 
                 string getcombo = indstring.ToString();
                 selectedHex = Convert.ToInt32(getcombo.Substring(2), 16);
+                paddress = Convert.ToByte(getcombo.Replace("0x", ""), 16);
                 byte valbyte = ReadRegister(spiDriver, (ushort)selectedHex);
                 
                 DataRow row = dt.NewRow();
@@ -214,11 +219,18 @@ namespace ADF4368_Register
                 row["Register"] = getcombo;
                 row["Value"] = $"0x{valbyte:X2}";
                 row["Value byte"] = valbyte;
-                dt.Rows.Add(row);                
+                dt.Rows.Add(row);
+
+                if (paddress == 0x002B)
+                {
+                    CheckPowerRegister(paddress);
+                }
             }
 
             if (dt.Rows.Count != 0)
+            {
                 Cmd_WriteAll.Enabled = true;
+            }
         }
 
         static byte ReadRegister(Ft4222Spi spi, ushort registerAddress)
@@ -316,24 +328,17 @@ namespace ADF4368_Register
         
         private void Cmd_Write_Click(object sender, EventArgs e)
         {
-            string regaddress = comboBox1.SelectedItem?.ToString(); // Get selected value as string            
+            string regaddress = comboBox1.SelectedItem?.ToString(); // Get selected value as string
+                                                                    // 
+            byte poweraddress = Convert.ToByte(regaddress.Replace("0x", ""), 16);
             ushort regValue = Convert.ToUInt16(regaddress.Replace("0x", ""), 16);
             byte databyte = Convert.ToByte(datavalue.Replace("0x", ""), 16);
             
             WriteRegister(spiDriver, regValue, databyte);
 
-            if (regaddress == "0x002B")
+            if (poweraddress == 0x002B)
             {
-                if (databyte == 0x00)
-                {
-                    Cmd_PowerSwitch.Text = "RF POWER ON";
-                    radioButton2.Checked = true;
-                }
-                else 
-                {
-                    Cmd_PowerSwitch.Text = "RF POWER OFF";
-                    radioButton2.Checked = false;
-                }
+                CheckPowerRegister(poweraddress);
             }
         }
 
@@ -365,33 +370,45 @@ namespace ADF4368_Register
 
         private void Cmd_PowerSwitch_Click(object sender, EventArgs e)
         {
-            if(Cmd_PowerSwitch.Text.Equals("RF POWER ON"))
+            byte poweraddress = 0x002B;
+            if (Cmd_PowerSwitch.Text.Equals("RF POWER ON"))
             {
                 
-                byte poweraddress = 0x002B;
+                
                 WriteRegister(spiDriver, poweraddress, 0x83);
                 Thread.Sleep(100);
                 byte powerreturn = ReadRegister(spiDriver, poweraddress);
+                CheckPowerRegister(poweraddress);
 
-                if (powerreturn != 0)
-                {
-                    Cmd_PowerSwitch.Text = "RF POWER OFF";
-                    radioButton2.Checked = false;
-                }
             }
             else
-            {                
-                byte poweraddress = 0x002B;
+            {               
                 WriteRegister(spiDriver, poweraddress, 0x00);
                 Thread.Sleep(100);
-                byte powerreturn = ReadRegister(spiDriver, poweraddress);
-
-                if (powerreturn == 0x00)
-                {
-                    Cmd_PowerSwitch.Text = "RF POWER ON";
-                    radioButton2.Checked = true;
-                }
+                CheckPowerRegister(poweraddress);
             }
+        }
+
+
+        private void CheckPowerRegister(byte address)
+        {
+            byte powerreturn = ReadRegister(spiDriver, address);
+
+            if (powerreturn == 0x00)
+            {
+                Cmd_PowerSwitch.Text = "RF POWER ON";
+                radioButton2.Checked = true;
+            }
+            else
+            {
+                Cmd_PowerSwitch.Text = "RF POWER OFF";
+                radioButton2.Checked = false;
+            }
+        }
+
+        private void Cmd_Export_Click(object sender, EventArgs e)
+        {
+
         }
     }
 }
