@@ -380,8 +380,6 @@ namespace ADF4368_Register
                 Thread.Sleep(100);
                 byte powerreturn = ReadRegister(spiDriver, poweraddress);
                 CheckPowerRegister(poweraddress);
-                
-
             }
             else
             {               
