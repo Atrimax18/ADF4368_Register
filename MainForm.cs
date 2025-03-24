@@ -116,6 +116,7 @@ namespace ADF4368_Register
                             Cmd_WriteAll.Enabled = true;
                             Cmd_PowerSwitch.Enabled = true;
                             Cmd_Export.Enabled = true;
+                            comboBox2.Enabled = true;
                         }
                     }                    
                 }
@@ -478,6 +479,48 @@ namespace ADF4368_Register
                 radioButton1.Checked = false;
                 radioButton1.Text = "RF UNLOCKED";
             }
+        }
+
+        private void comboBox2_SelectedIndexChanged(object sender, EventArgs e)
+        {
+
+            int indvalue = comboBox2.SelectedIndex;
+            byte data = 0b0000000;
+            byte reisterval = 0x002E;
+
+            switch (indvalue)
+            {
+
+                case 0:
+                    data = 0b00000000;
+                    break;
+
+                case 1:
+                    data = 0b00010000;
+                    break;
+                case 2:
+                    data = 0b00100000;
+                    break;
+                case 3:
+                    data = 0b00110000;
+                    break;
+                case 4:
+                    data = 0b01000000;
+                    break;
+                case 5:
+                    data = 0b01010000;
+                    break;
+            }
+
+            WriteRegister(spiDriver, (ushort)reisterval, data);
+            Thread.Sleep(100);
+
+            byte checkbyte = ReadRegister(spiDriver, (ushort)reisterval);
+
+            if (checkbyte == data)
+                MessageBox.Show("MUXOUT updated successfully!!", "Information");
+            else
+                MessageBox.Show("MUXOUT Not updated!!!", "Information");            
         }
     }
 }
