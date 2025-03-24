@@ -375,15 +375,16 @@ namespace ADF4368_Register
             {
                 
                 
-                WriteRegister(spiDriver, poweraddress, 0x83);
+                WriteRegister(spiDriver, poweraddress, 0x00);
                 Thread.Sleep(100);
                 byte powerreturn = ReadRegister(spiDriver, poweraddress);
                 CheckPowerRegister(poweraddress);
+                
 
             }
             else
             {               
-                WriteRegister(spiDriver, poweraddress, 0x00);
+                WriteRegister(spiDriver, poweraddress, 0x83);
                 Thread.Sleep(100);
                 CheckPowerRegister(poweraddress);
             }
@@ -398,17 +399,28 @@ namespace ADF4368_Register
             {
                 Cmd_PowerSwitch.Text = "RF POWER ON";
                 radioButton2.Checked = true;
+                timer1.Start();
             }
             else
             {
                 Cmd_PowerSwitch.Text = "RF POWER OFF";
                 radioButton2.Checked = false;
+                timer1.Stop();  
             }
         }
 
         private void Cmd_Export_Click(object sender, EventArgs e)
         {
             SaveDataTableToCsv(dt);
+        }
+
+        private int RFLockSampling(byte address, int monitoredBitIndex)
+        {
+            
+            byte lockdata = ReadRegister(spiDriver, address);
+            int bitValue = (lockdata >> monitoredBitIndex) & 0x01;
+
+            return bitValue;
         }
 
         private void SaveDataTableToCsv(DataTable table)
@@ -451,6 +463,20 @@ namespace ADF4368_Register
                         MessageBox.Show("Error saving CSV: " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     }
                 }
+            }
+        }
+
+        private void timer1_Tick(object sender, EventArgs e)
+        {
+            if(RFLockSampling(0x0058, 0) == 1)
+            {
+                radioButton1.Checked = true;
+                radioButton1.Text = "RF LOCKED";
+            }
+            else
+            {
+                radioButton1.Checked = false;
+                radioButton1.Text = "RF UNLOCKED";
             }
         }
     }
