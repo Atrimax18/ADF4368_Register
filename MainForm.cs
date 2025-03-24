@@ -354,10 +354,16 @@ namespace ADF4368_Register
             if(Cmd_PowerSwitch.Text.Equals("RF POWER ON"))
             {
                 Cmd_PowerSwitch.Text = "RF POWER OFF";
+                byte poweraddress = 0x002B;
+                WriteRegister(spiDriver, poweraddress, 0x83);
+                radioButton2.Checked = false;
             }
             else
             {
                 Cmd_PowerSwitch.Text = "RF POWER ON";
+                byte poweraddress = 0x002B;
+                WriteRegister(spiDriver, poweraddress, 0x00);
+                radioButton2.Checked = true;
             }
         }
     }
