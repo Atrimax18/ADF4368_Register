@@ -202,14 +202,12 @@
             // radioButton1
             // 
             this.radioButton1.AutoSize = true;
-            this.radioButton1.Checked = true;
             this.radioButton1.Enabled = false;
             this.radioButton1.ForeColor = System.Drawing.SystemColors.ControlText;
             this.radioButton1.Location = new System.Drawing.Point(684, 45);
             this.radioButton1.Name = "radioButton1";
             this.radioButton1.Size = new System.Drawing.Size(101, 17);
             this.radioButton1.TabIndex = 13;
-            this.radioButton1.TabStop = true;
             this.radioButton1.Text = "RF UNLOCKED";
             this.radioButton1.UseVisualStyleBackColor = true;
             // 
