@@ -397,13 +397,13 @@ namespace ADF4368_Register
             if (powerreturn == 0x00)
             {
                 Cmd_PowerSwitch.Text = "RF POWER ON";
-                radioButton2.Checked = true;
+                radioButton2.Checked = false;
                 timer1.Start();
             }
             else
             {
                 Cmd_PowerSwitch.Text = "RF POWER OFF";
-                radioButton2.Checked = false;
+                radioButton2.Checked = true;
                 timer1.Stop();  
             }
         }
