@@ -373,12 +373,11 @@ namespace ADF4368_Register
         {
             byte poweraddress = 0x002B;
             if (Cmd_PowerSwitch.Text.Equals("RF POWER ON"))
-            {
-                
+            {               
                 
                 WriteRegister(spiDriver, poweraddress, 0x00);
                 Thread.Sleep(100);
-                byte powerreturn = ReadRegister(spiDriver, poweraddress);
+                
                 CheckPowerRegister(poweraddress);
             }
             else
@@ -396,14 +395,14 @@ namespace ADF4368_Register
 
             if (powerreturn == 0x00)
             {
-                Cmd_PowerSwitch.Text = "RF POWER ON";
-                radioButton2.Checked = false;
+                Cmd_PowerSwitch.Text = "RF POWER OFF";
+                radioButton2.Checked = true;
                 timer1.Start();
             }
             else
             {
-                Cmd_PowerSwitch.Text = "RF POWER OFF";
-                radioButton2.Checked = true;
+                Cmd_PowerSwitch.Text = "RF POWER ON";
+                radioButton2.Checked = false;
                 timer1.Stop();  
             }
         }
